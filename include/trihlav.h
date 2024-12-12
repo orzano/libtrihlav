@@ -80,6 +80,15 @@ typedef struct TApplication {
 // #region Exported functions
 
 /**
+ * @brief Get version of Trihlav library.
+ * @param oMajor Major version number.
+ * @param oMinor Minor version number.
+ * @param oPatch Patch version number.
+ * @param oVer Version as 0xAAIIPP.
+ */
+void trh_version( uint8_t *oMajor, uint8_t *oMinor, uint8_t *oPatch, uint32_t *oVer );
+
+/**
  * @brief Get application object.
  */
 TApplication *trh_init( TApplication *iApp, void *iExt );

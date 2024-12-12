@@ -22,6 +22,19 @@ static TApplication *geApplication = 0;
 
 // #region Exported functions
 
+void trh_version( uint8_t *oMajor, uint8_t *oMinor, uint8_t *oPatch, uint32_t *oVer )
+{
+	if( oMajor != 0 ) *oMajor = APP_VERSION_MAJOR;
+	if( oMinor != 0 ) *oMinor = APP_VERSION_MINOR;
+	if( oPatch != 0 ) *oPatch = APP_VERSION_PATCH;
+
+	// Convert major, minor and patch to version number using shift operands
+	if( oVer != 0 ) *oVer =
+		( APP_VERSION_MAJOR << 16 ) |
+		( APP_VERSION_MINOR << 8 ) |
+		( APP_VERSION_PATCH );
+}
+
 // Initialize application object.
 TApplication *trh_init( TApplication *iApp, void *iExt )
 {
