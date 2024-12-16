@@ -157,7 +157,7 @@ void trh_log_set_severity_level( LogSeverity iSeverity )
 	trh_log( LOG_NOTE, "Verbose mode: '%s'\n", iSeverity == LOG_DEBUG ? "ON" : "OFF" );
 }
 
-void ocane_log_release()
+void trh_log_release()
 {
 	if( gsLog.file != 0 ) {
 		fclose( gsLog.file );

@@ -130,6 +130,8 @@ int trh_update()
 	gsApplication.time_system = lTime;
 	gsApplication.time_app += gsApplication.dt;
 	pthread_mutex_unlock( &gsApplication.mutex );
+
+	return TRH_OK;
 }
 
 double trh_get_app_time()
