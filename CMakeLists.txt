@@ -1,9 +1,9 @@
 cmake_minimum_required( VERSION 3.7.2 )
 
-set( APPLICATION_NAME libtrihlav )
+set( APPLICATION_NAME trihlav )
 set( APPLICATION_VERSION "24.12.01" )
 
-project( libtrihlav VERSION ${APPLICATION_VERSION} )
+project( trihlav VERSION ${APPLICATION_VERSION} )
 
 add_definitions( -DLIB_TRH_NAME="${APPLICATION_NAME}" )
 add_definitions( -DLIB_TRH_VERSION="${APPLICATION_VERSION}" )
@@ -20,19 +20,19 @@ include_directories( include )
 
 file( GLOB SOURCE_FILES src/*.c )
 
-add_library( libtrihlav SHARED ${SOURCE_FILES} )
+add_library( trihlav SHARED ${SOURCE_FILES} )
 
 target_link_libraries(
-	libtrihlav
+	trihlav
 	json-c
 	mnl
 )
 
-set_property( TARGET libtrihlav PROPERTY C_STANDARD 11 )
-set_target_properties( libtrihlav
+set_property( TARGET trihlav PROPERTY C_STANDARD 11 )
+set_target_properties( trihlav
   PROPERTIES
   VERSION ${APPLICATION_VERSION}
   SOVERSION 1
 )
 
-install( TARGETS libtrihlav LIBRARY DESTINATION /usr/lib/ )
+install( TARGETS trihlav CONFIGURATIONS ${CMAKE_BUILD_TYPE} LIBRARY DESTINATION  "${CMAKE_INSTALL_PREFIX}/lib/" )
