@@ -162,6 +162,16 @@ int trh_dbus_reply( sd_bus_message *iMsg )
 	return TRH_OK;
 }
 
+int trh_dbus_reply_error( sd_bus_message *iMsg, chars iText, int iErrno )
+{
+	//int local_reply_error( sd_bus_message *iMessage, chars iText, int iErrno, int iRetCode )
+	sd_bus_error lError = SD_BUS_ERROR_NULL;
+	trh_log( LOG_ERROR, "SDBUS %s. Error: %s\n", iText, strerror( -iErrno ) );
+	sd_bus_error_set_errno( &lError, iErrno );
+	sd_bus_reply_method_error( iMsg, &lError );
+	return TRH_DBUS_ARG_FAILED;
+}
+
 // Close dbus link.
 void trh_dbus_release()
 {

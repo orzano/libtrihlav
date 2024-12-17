@@ -74,6 +74,15 @@ int trh_dbus_method( TTrhDbusMessage *iMsg, ... );
 int trh_dbus_reply( sd_bus_message *iMsg );
 
 /**
+ * @brief Send error response to received dbus message.
+ * @param iMsg Message received from dbus (eg function executed from different process)
+ * @param iText Error message (printed to log file).
+ * @param iErrno Error number (printed to log file).
+ * @return TRH_DBUS_ARG_FAILED
+ */
+int trh_dbus_reply_error( sd_bus_message *iMsg, chars iText, int iErrno );
+
+/**
  * @brief Close dbus link.
  */
 void trh_dbus_release();
