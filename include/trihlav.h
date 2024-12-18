@@ -29,7 +29,7 @@
 		p = 0; \
 	}
 
-// Return codes
+// Return codes - pls don't go above 1024 and below -1024
 #define TRH_OK						1
 #define TRH_WAITING					2
 #define TRH_END						3
@@ -44,12 +44,14 @@
 #define TRH_UNINITIALIZED			-4
 
 #define TRH_EPOLL_FAILED			-32
+#define TRH_TIMER_FAILED			-33
 
 #define TRH_DBUS_INIT_FAILED		-64
 #define TRH_DBUS_ARG_FAILED			-65
 #define TRH_DBUS_REPLY_FAILED		-66
 #define TRH_DBUS_SEND_FAILED		-67
 #define TRH_DBUS_PROCESS_FAILED		-68
+
 
 typedef const char* chars;
 
