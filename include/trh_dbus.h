@@ -60,12 +60,12 @@ int trh_dbus_process();
  */
 void* trh_dbus_ptr();
 
-/**
- * @brief Call dbus method in a different service.
- * @param iMsg Data identifying the target process, executed method, types of arguments.
- * @param ... Arguments.
- */
-int trh_dbus_method( TTrhDbusMessage *iMsg, ... );
+// /**
+//  * @brief Call dbus method in a different service.
+//  * @param iMsg Data identifying the target process, executed method, types of arguments.
+//  * @param ... Arguments.
+//  */
+// int trh_dbus_method( TTrhDbusMessage *iMsg, ... );
 
 /**
  * @brief Send response to received dbus message.

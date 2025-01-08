@@ -108,47 +108,47 @@ void* trh_dbus_ptr()
 	return gsBus.ptr;
 }
 
-static int local_dbus_validate_message( TTrhDbusMessage *iMsg )
-{
-	if( iMsg == 0 || iMsg->destination == 0 || iMsg->path == 0 || iMsg->interface == 0 || iMsg->member == 0 || iMsg->response == 0 )
-		return TRH_ARG_INVALID;
+// static int local_dbus_validate_message( TTrhDbusMessage *iMsg )
+// {
+// 	if( iMsg == 0 || iMsg->destination == 0 || iMsg->path == 0 || iMsg->interface == 0 || iMsg->member == 0 || iMsg->response == 0 )
+// 		return TRH_ARG_INVALID;
 
-	return TRH_OK;
-}
+// 	return TRH_OK;
+// }
 
-int trh_dbus_method( TTrhDbusMessage *iMsg, ... )
-{
-	int lCode = TRH_OK;
+// int trh_dbus_method( TTrhDbusMessage *iMsg, ... )
+// {
+// 	int lCode = TRH_OK;
 
-	if( ( lCode = local_dbus_validate_message( iMsg ) ) != TRH_OK )
-		return lCode;
+// 	if( ( lCode = local_dbus_validate_message( iMsg ) ) != TRH_OK )
+// 		return lCode;
 
-	_cleanup_(sd_bus_error_free) sd_bus_error lError = SD_BUS_ERROR_NULL;
+// 	_cleanup_(sd_bus_error_free) sd_bus_error lError = SD_BUS_ERROR_NULL;
 
-	trh_log( LOG_DEBUG, "DBUS method %s... \n", iMsg->member );
+// 	trh_log( LOG_DEBUG, "DBUS method %s... \n", iMsg->member );
 
-	va_list args;
-	va_start( args, iMsg );
-	lCode = sd_bus_call_methodv(
-		gsBus.ptr,							// sdbus object
-		iMsg->destination,					// destination
-		iMsg->path,							// object path
-		iMsg->interface,					// interface
-		iMsg->member,						// member
-		&lError,							// return error
-		&iMsg->response,					// reply
-		iMsg->types,						// types of the following arguments
-		args								// arguments
-	);
-	va_end(args);
+// 	va_list args;
+// 	va_start( args, iMsg );
+// 	lCode = sd_bus_call_methodv(
+// 		gsBus.ptr,							// sdbus object
+// 		iMsg->destination,					// destination
+// 		iMsg->path,							// object path
+// 		iMsg->interface,					// interface
+// 		iMsg->member,						// member
+// 		&lError,							// return error
+// 		&iMsg->response,					// reply
+// 		iMsg->types,						// types of the following arguments
+// 		args								// arguments
+// 	);
+// 	va_end(args);
 
-	if( lCode < 0 ) {
-		trh_log( LOG_ERROR, "DBUS method %s failed.\n", iMsg->member );
-		return TRH_DBUS_REPLY_FAILED;
-	}
+// 	if( lCode < 0 ) {
+// 		trh_log( LOG_ERROR, "DBUS method %s failed.\n", iMsg->member );
+// 		return TRH_DBUS_REPLY_FAILED;
+// 	}
 
-	return TRH_OK;
-}
+// 	return TRH_OK;
+// }
 
 int trh_dbus_reply( sd_bus_message *iMsg )
 {
