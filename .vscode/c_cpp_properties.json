@@ -1,0 +1,23 @@
+{
+    "configurations": [
+        {
+            "name": "Default",
+            "includePath": [
+                "${workspaceFolder}/**"
+            ],
+            "defines": [
+                "APP_NAME=\"libtrihlav\"",
+                "APP_VERSION=\"1.0.0\"",
+                "LIB_TRH_NAME=\"libtrihlav\"",
+                "LIB_TRH_VERSION=\"24.12.01\"",
+                "LIB_TRH_VERSION_MAJOR=24",
+                "LIB_TRH_VERSION_MINOR=12",
+                "LIB_TRH_VERSION_PATCH=1"
+            ],
+            "intelliSenseMode": "linux-gcc-x64",
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "gnu11"
+        }
+    ],
+    "version": 4
+}

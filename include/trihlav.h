@@ -97,6 +97,7 @@ void trh_version( TAppVersion *oVersion );
 
 /**
  * @brief Initialize application object and return pointer to its address.
+ * @param iExt Pointer to external data.
  * @return Pointer to application object. If null, application should terminate immediately. 
  */
 struct TApplication *trh_init( void *iExt );

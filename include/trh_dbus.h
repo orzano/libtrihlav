@@ -1,5 +1,5 @@
 /*
- * @brief Essential includes and generic defines
+ * @brief Basic IPC (dbus) functions.
  * @copyright Copyright © 2022-2024 Trihlav, s.r.o.
  * @license MIT License / see LICENSE file
  */
@@ -64,6 +64,8 @@ void* trh_dbus_ptr();
 //  * @brief Call dbus method in a different service.
 //  * @param iMsg Data identifying the target process, executed method, types of arguments.
 //  * @param ... Arguments.
+//
+//  * Function not supported on Deb8.
 //  */
 // int trh_dbus_method( TTrhDbusMessage *iMsg, ... );
 
