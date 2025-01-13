@@ -11,6 +11,7 @@
 #include <assert.h>
 #include <signal.h>
 #include <execinfo.h>
+#include <sys/epoll.h>
 
 #include "trihlav.h"
 
@@ -33,6 +34,9 @@ typedef struct TApplication {
 
 	/// If true, application is terminating.
 	bool terminate;
+
+	/// Epoll file descriptor.
+	int epoll_fd;
 
 	/// Protect application object in multi-threaded environment.
 	pthread_mutex_t mutex;
@@ -57,6 +61,16 @@ static int local_signal_failed( int iSignum );
  * @retval TRH_SIGNAL_FAILED failed to register signal.
  */
 static int local_signal_register();
+
+/**
+ * @brief Initialize epoll object.
+ */
+static int local_epoll_init();
+
+/**
+ * @brief Release epoll object.
+ */
+static void local_epoll_release();
 
 // #endregion
 
@@ -101,6 +115,10 @@ TApplication *trh_init( void *iExt )
 
 	// Initialize main thread mutex.
 	pthread_mutex_init( &gsApplication.mutex, 0 );
+
+	// Create epoll object
+	if( local_epoll_init() != TRH_OK )
+		return 0;
 
 	return &gsApplication;
 }
@@ -175,6 +193,8 @@ void trh_release()
 {
     // Destroy the mutex
     pthread_mutex_destroy( &gsApplication.mutex );
+	// Release epoll object
+	local_epoll_release();
 }
 
 // #endregion
@@ -260,5 +280,33 @@ static int local_signal_register()
 }
 
 // #endregion // Signal handling
+
+
+// #region Epoll
+
+// Initialize epoll object.
+int local_epoll_init()
+{
+	gsApplication.epoll_fd = epoll_create1( 0 );
+
+	if( gsApplication.epoll_fd == -1 ) {
+		trh_log( LOG_ERROR, "Failed to create epoll. Error: %s\n", strerror( errno ) );
+		return TRH_EPOLL_FAILED;
+	}
+
+	return TRH_OK;
+}
+
+// Release epoll object.
+void local_epoll_release()
+{
+	if( gsApplication.epoll_fd != -1 ) {
+		close( gsApplication.epoll_fd );
+		gsApplication.epoll_fd = -1;
+	}
+}
+
+// #endregion // Epoll
+
 
 // #endregion // Static functions

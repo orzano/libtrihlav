@@ -1,5 +1,5 @@
 /*
- * @brief Essential includes and generic defines
+ * @brief Dbus functions
  * @copyright Copyright © 2022-2024 Trihlav, s.r.o.
  * @license MIT License / see LICENSE file
  */
