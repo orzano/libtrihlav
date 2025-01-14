@@ -10,8 +10,6 @@
 
 // #endregion
 
-#define _cleanup_(f) __attribute__((cleanup(f)))
-
 
 // #region Structures
 

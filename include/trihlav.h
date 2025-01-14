@@ -29,6 +29,13 @@
 		p = 0; \
 	}
 
+// Close file descriptor
+#define CLOSE_FD( fd ) \
+	if( fd != -1 ) { \
+		close( fd ); \
+		fd = -1; \
+	}
+
 // Return codes - pls don't go above 1024 and below -1024
 #define TRH_OK						1
 #define TRH_WAITING					2
@@ -44,7 +51,8 @@
 #define TRH_UNINITIALIZED			-4
 
 #define TRH_EPOLL_FAILED			-32
-#define TRH_TIMER_FAILED			-33
+#define TRH_EPOLL_ERROR				-33
+#define TRH_TIMER_FAILED			-34
 
 #define TRH_DBUS_INIT_FAILED		-64
 #define TRH_DBUS_ARG_FAILED			-65
@@ -52,6 +60,7 @@
 #define TRH_DBUS_SEND_FAILED		-67
 #define TRH_DBUS_PROCESS_FAILED		-68
 
+#define _cleanup_(f) __attribute__((cleanup(f)))
 
 typedef const char* chars;
 
@@ -147,6 +156,51 @@ void trh_release();
 // #endregion // Application
 
 
+// #region Events
+
+struct TTrhEvent;
+struct TTrhTimer;
+
+/// Callback function handling timer event.
+typedef int (*handle_event)( struct TTrhEvent *iEvent );
+
+/**
+ * @brief Event object registered with epoll.
+ */
+typedef struct TTrhEvent {
+	/// File descriptor registered with epoll.
+	int fd;
+	/// Callback function executed when event is triggered.
+	handle_event handle_event;
+	/// Callback function executed on error.
+	handle_event handle_error;
+
+	/// Extended data.
+	union {
+		/// Pointer to timer event object.
+		struct TTrhTimerProperties *timer;
+		/// Pointer to user data.
+		void *data;
+	} ext;
+} TTrhEvent;
+
+
+/**
+ * @brief Register event with epoll
+ * @param iFd File descriptor of the timer.
+ * @param iTimer Pointer to the timer object.
+ */
+int trh_event_register( TTrhEvent *iEvent );
+
+/**
+ * @brief Unregister event from epoll.
+ */
+void trh_event_unregister( TTrhEvent *iEvent );
+
+
+// #endregion // Events
+
+
 // #region Logging (trh_log.c)
 
 typedef enum LogSeverity
@@ -211,5 +265,7 @@ void trh_log_set_severity_level( LogSeverity iSeverity );
 void trh_log_release();
 
 // #endregion // Logging
+
+
 
 #endif // TRHIHLAV_H

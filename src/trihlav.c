@@ -17,6 +17,8 @@
 
 // #endregion
 
+#define EPOLL_EVENTS 16
+
 // #region Typedefs
 
 /**
@@ -66,6 +68,11 @@ static int local_signal_register();
  * @brief Initialize epoll object.
  */
 static int local_epoll_init();
+
+/**
+ * @brief Handle epoll event.
+ */
+static int local_epoll_event( struct epoll_event *iEvent );
 
 /**
  * @brief Release epoll object.
@@ -142,12 +149,18 @@ int trh_set_signal_handler( int iSignal, handle_signal_usr iHandler )
 int trh_update()
 {
 	double lTime = trh_time();
+	struct epoll_event lEvents[EPOLL_EVENTS];
 
 	pthread_mutex_lock( &gsApplication.mutex );
 	gsApplication.dt = lTime - gsApplication.time_system;
 	gsApplication.time_system = lTime;
 	gsApplication.time_app += gsApplication.dt;
 	pthread_mutex_unlock( &gsApplication.mutex );
+
+	int lEventCount = epoll_wait( gsApplication.epoll_fd, lEvents, EPOLL_EVENTS, 10 );
+
+	for( int ii = 0; ii < lEventCount; ii++ )
+		local_epoll_event( &lEvents[ii] );
 
 	return TRH_OK;
 }
@@ -198,6 +211,43 @@ void trh_release()
 }
 
 // #endregion
+
+// #region Events
+
+int trh_event_register( TTrhEvent *iEvent )
+{
+	if( iEvent == 0 ) {
+		trh_log( LOG_ERROR, "Failed to register event. Event is null.\n" );
+		return TRH_ARG_INVALID;
+	}
+
+	struct epoll_event lEvent = {
+		.events = EPOLLIN,
+		.data.ptr = iEvent
+	};
+
+	if( epoll_ctl( gsApplication.epoll_fd, EPOLL_CTL_ADD, iEvent->fd, &lEvent ) == -1 ) {
+		trh_log( LOG_ERROR, "Failed to add timer to epoll: %s.", strerror( errno ) );
+		return TRH_EPOLL_FAILED;
+	}
+
+	return TRH_OK;
+}
+
+void trh_event_unregister( TTrhEvent *iEvent )
+{
+	if( iEvent == 0 ) {
+		trh_log( LOG_ERROR, "Failed to unregister event. Event is null.\n" );
+		return;
+	}
+
+	if( gsApplication.epoll_fd == -1 )
+		return;
+
+	epoll_ctl( gsApplication.epoll_fd, EPOLL_CTL_DEL, iEvent->fd, 0 );
+}
+
+// #endregion // Events
 
 
 // #region Static functions
@@ -297,13 +347,29 @@ int local_epoll_init()
 	return TRH_OK;
 }
 
+int local_epoll_event( struct epoll_event *iEvent )
+{
+	TTrhEvent *lEvent = (TTrhEvent*)iEvent->data.ptr;
+
+	// Check if file descriptor has been closed, or network connection has been lost.
+	if( iEvent->events & EPOLLERR ) {
+		trh_log( LOG_WARNING, "EPOLLERR on fd %d\n", iEvent->data.fd );
+		lEvent->handle_error( lEvent );
+		return TRH_EPOLL_ERROR;
+	}
+
+	// Check if file descriptor is ready for reading.
+	if( iEvent->events & EPOLLIN ) {
+		lEvent->handle_event( lEvent );
+	}
+
+	return TRH_OK;
+}
+
 // Release epoll object.
 void local_epoll_release()
 {
-	if( gsApplication.epoll_fd != -1 ) {
-		close( gsApplication.epoll_fd );
-		gsApplication.epoll_fd = -1;
-	}
+	CLOSE_FD( gsApplication.epoll_fd );
 }
 
 // #endregion // Epoll
