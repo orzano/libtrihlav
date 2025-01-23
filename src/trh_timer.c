@@ -116,6 +116,9 @@ int trh_timer_init( TTrhTimerProperties *iProperties, TTrhEvent **oEvent )
 		return lCode;
 	}
 
+	// Register timer with epoll
+	trh_event_register( lEvent );
+
 	// Return timer object
 	*oEvent = lEvent;
 
