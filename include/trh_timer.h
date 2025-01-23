@@ -17,7 +17,10 @@ typedef struct TTrhTimerProperties {
 	bool repeat;
 	void *ext;
 
+	// Called when timer event is triggered.
 	handle_event handle_timer_event;
+	// Called when timer event is released from memory.
+	handle_event handle_timer_stopped;
 } TTrhTimerProperties;
 
 

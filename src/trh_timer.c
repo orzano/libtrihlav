@@ -53,7 +53,8 @@ static int local_timer_event( TTrhEvent *iEvent )
 	if( iEvent->ext.timer == 0 ) return TRH_ARG_INVALID;
 
 	// Call timer event handler
-	iEvent->ext.timer->handle_timer_event( iEvent );
+	if( iEvent->ext.timer->handle_timer_event )
+		iEvent->ext.timer->handle_timer_event( iEvent );
 
 	// If timer is not repeating, unregister it
 	if( iEvent->ext.timer->repeat == false ) {
@@ -139,8 +140,14 @@ void trh_timer_release( TTrhEvent *iEvent )
 	// Close timer socket
 	CLOSE_FD( iEvent->fd );
 
-	// Free timer object
-	FREE_PTR( iEvent->ext.timer );
+	// Free timer object.
+	if( iEvent->ext.timer != 0 )
+	{
+		if( iEvent->ext.timer->handle_timer_stopped )
+			iEvent->ext.timer->handle_timer_stopped( iEvent );
+	
+		FREE_PTR( iEvent->ext.timer );
+	}
 
 	// Free memory
 	free( iEvent );
