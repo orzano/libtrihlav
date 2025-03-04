@@ -94,10 +94,11 @@ typedef struct TAppVersion {
 	uint32_t ver;
 } TAppVersion;
 
-/**
- * Callback for handling signals from user space (SIGUSR1, SIGUSR2).
- */
+/// Callback for handling signals from user space (SIGUSR1, SIGUSR2).
 typedef void (*handle_signal_usr)( int );
+
+/// Callback for handling main loop (epoll) errors
+typedef int (*handle_loop_error)();
 
 /**
  * @brief Get version of Trihlav library.
@@ -120,6 +121,13 @@ struct TApplication *trh_init( void *iExt );
  * @retval TRH_SIGNAL_FAILED failed to register signal.
  */
 int trh_set_signal_handler( int iSignal, handle_signal_usr iHandler );
+
+/**
+ * @brief Set callback that will be executed on main loop error.
+ * 
+ * To disable error handling, set iHandler to null.
+ */
+void trh_set_loop_error_handler( handle_loop_error iHandler );
 
 /**
  * @brief Update application state.

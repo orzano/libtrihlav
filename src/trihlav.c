@@ -43,6 +43,9 @@ typedef struct TApplication {
 	/// Protect application object in multi-threaded environment.
 	pthread_mutex_t mutex;
 
+	/// Callback function executed on main loop error.
+	handle_loop_error handle_error;
+
 	/// Pointer to extended object.
 	void* ext;
 } TApplication;
@@ -68,6 +71,16 @@ static int local_signal_register();
  * @brief Initialize epoll object.
  */
 static int local_epoll_init();
+
+/**
+ * @brief Executed when epoll_wait() returns -1.
+ * @return TRH_WAITING An interrupt signal has been received and callback handler returned OK.
+ * @return TRH_EPOLL_FAILED An error has been detected or callback handler did not return OK.
+ * 
+ * If callback handler is null, function always returns TRH_EPOLL_FAILED.
+ * Callback handler is set (or disabled) using function \a trh_set_loop_error_handler.
+ */
+static int local_epoll_error();
 
 /**
  * @brief Handle epoll event.
@@ -145,6 +158,11 @@ int trh_set_signal_handler( int iSignal, handle_signal_usr iHandler )
 	return TRH_OK;
 }
 
+void trh_set_loop_error_handler( handle_loop_error iHandler )
+{
+	gsApplication.handle_error = iHandler;
+}
+
 // Update time
 int trh_update()
 {
@@ -158,6 +176,9 @@ int trh_update()
 	pthread_mutex_unlock( &gsApplication.mutex );
 
 	int lEventCount = epoll_wait( gsApplication.epoll_fd, lEvents, EPOLL_EVENTS, 10 );
+
+	if( lEventCount == -1 )
+		local_epoll_error();
 
 	for( int ii = 0; ii < lEventCount; ii++ )
 		local_epoll_event( &lEvents[ii] );
@@ -343,6 +364,19 @@ int local_epoll_init()
 	}
 
 	return TRH_OK;
+}
+
+int local_epoll_error()
+{
+	if( errno == EINTR && gsApplication.handle_error() == TRH_OK )
+		return TRH_WAITING;
+
+	if( errno == EINTR )
+		trh_log( LOG_WARNING, "Application loop terminated by interrupt signal.\n" );
+	else
+		trh_log( LOG_ERROR, "Error while checking for epoll events. Error: %s\n", strerror( errno ) );
+
+	return TRH_EPOLL_FAILED;
 }
 
 int local_epoll_event( struct epoll_event *iEvent )
