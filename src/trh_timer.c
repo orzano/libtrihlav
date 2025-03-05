@@ -8,84 +8,18 @@
 
 #include "trh_timer.h"
 
+#include <assert.h>
 #include <string.h>
 #include <errno.h>
 #include <sys/timerfd.h>
 
-// #region Local types
+static int local_timer_init( TTrhTimerProperties *iProperties, TTrhEvent *iEvent );
+static int local_timer_set( TTrhEvent *iEvent, time_t iSec, time_t iNsec );
+static int local_timer_event( TTrhEvent *iEvent );
+static int local_timer_error( TTrhEvent *iEvent );
+
 
 // #region Exported functions
-
-static int local_timer_init( TTrhTimerProperties *iProperties, TTrhEvent *iEvent )
-{
-	struct itimerspec lSpec = {
-		.it_interval = { .tv_sec = 0, .tv_nsec = 0 },
-		.it_value = {
-			.tv_sec = iProperties->sec,
-			.tv_nsec = iProperties->nsec
-		}
-	};
-
-	// Create timer fd
-	iEvent->fd = timerfd_create( CLOCK_MONOTONIC, TFD_NONBLOCK );
-	if( iEvent->fd == -1 ) {
-		trh_log( LOG_ERROR, "Failed to create timer. Error: %s\n", strerror( errno ) );
-		return TRH_TIMER_FAILED;
-	}
-
-	// Create timer properties - clone timer object in memory
-	iEvent->ext.timer = (TTrhTimerProperties*)malloc( sizeof( TTrhTimerProperties ) );
-	if( iEvent->ext.timer == 0 ) return TRH_OUT_OF_MEM;
-	memcpy( iEvent->ext.timer, iProperties, sizeof( TTrhTimerProperties ) );
-
-	// Set timer properties
-	if( timerfd_settime( iEvent->fd, 0, &lSpec, 0 ) == -1 ) {
-		trh_log( LOG_ERROR, "Failed to set timer properties. Error: %s\n", strerror( errno ) );
-		return TRH_TIMER_FAILED;
-	}
-
-	return TRH_OK;
-}
-
-static int local_timer_event( TTrhEvent *iEvent )
-{
-	if( iEvent == 0 ) return TRH_ARG_INVALID;
-	if( iEvent->ext.timer == 0 ) return TRH_ARG_INVALID;
-
-	// Call timer event handler
-	if( iEvent->ext.timer->handle_timer_event )
-		iEvent->ext.timer->handle_timer_event( iEvent );
-
-	// If timer is not repeating, unregister it
-	if( iEvent->ext.timer->repeat == false ) {
-		trh_timer_release( iEvent );
-		return TRH_END;
-	}
-
-	// Renew the timer if it is repeating
-
-	struct itimerspec lSpec = {
-		.it_interval = { .tv_sec = 0, .tv_nsec = 0 },
-		.it_value = {
-			.tv_sec = iEvent->ext.timer->sec,
-			.tv_nsec = iEvent->ext.timer->nsec
-		}
-	};
-
-	if( timerfd_settime( iEvent->fd, 0, &lSpec, 0 ) == -1 ) {
-		trh_log( LOG_ERROR, "Failed to reset timer: %s", strerror( errno ) );
-		trh_timer_release( iEvent );
-		return TRH_TIMER_FAILED;
-	}
-
-	return TRH_OK;
-}
-
-static int local_timer_error( TTrhEvent *iEvent )
-{
-	trh_log( LOG_ERROR, "Timer error\n" );
-	return TRH_TIMER_FAILED;
-}
 
 int trh_timer_init( TTrhTimerProperties *iProperties, TTrhEvent **oEvent )
 {
@@ -118,7 +52,10 @@ int trh_timer_init( TTrhTimerProperties *iProperties, TTrhEvent **oEvent )
 	}
 
 	// Register timer with epoll
-	trh_event_register( lEvent );
+	if( ( lCode = trh_event_register( lEvent ) ) != TRH_OK ) {
+		trh_timer_release( lEvent );
+		return lCode;
+	}
 
 	// Return timer object
 	*oEvent = lEvent;
@@ -126,9 +63,22 @@ int trh_timer_init( TTrhTimerProperties *iProperties, TTrhEvent **oEvent )
 	return TRH_OK;
 }
 
-/**
- * @brief Unregister timer from epoll and release it.
- */
+int trh_timer_start( TTrhEvent *iEvent )
+{
+	TRH_ASSERT_ARG( iEvent != 0, "Failed to start timer" );
+	int lCode = local_timer_set( iEvent, iEvent->ext.timer->sec, iEvent->ext.timer->nsec );
+	iEvent->ext.timer->running = lCode == TRH_OK;
+	return TRH_OK;
+}
+
+void trh_timer_stop( TTrhEvent *iEvent )
+{
+	assert( iEvent != 0 );
+	iEvent->ext.timer->running = false;
+	local_timer_set( iEvent, 0, 0 );
+}
+
+// Unregister timer from epoll and release it.
 void trh_timer_release( TTrhEvent *iEvent )
 {
 	if( iEvent == 0 )
@@ -151,6 +101,74 @@ void trh_timer_release( TTrhEvent *iEvent )
 
 	// Free memory
 	free( iEvent );
+}
+
+// #endregion
+
+
+// #region Local types
+
+int local_timer_init( TTrhTimerProperties *iProperties, TTrhEvent *iEvent )
+{
+	// Create timer fd
+	iEvent->fd = timerfd_create( CLOCK_MONOTONIC, TFD_NONBLOCK );
+	if( iEvent->fd == -1 ) {
+		trh_log( LOG_ERROR, "Failed to create timer. Error: %s\n", strerror( errno ) );
+		return TRH_TIMER_FAILED;
+	}
+
+	// Create timer properties - clone timer object in memory
+	iEvent->ext.timer = (TTrhTimerProperties*)malloc( sizeof( TTrhTimerProperties ) );
+	if( iEvent->ext.timer == 0 ) return TRH_OUT_OF_MEM;
+	memcpy( iEvent->ext.timer, iProperties, sizeof( TTrhTimerProperties ) );
+
+	// Timer should be initialized in started state.
+	return trh_timer_start( iEvent );
+}
+
+int local_timer_set( TTrhEvent *iEvent, time_t iSec, time_t iNsec )
+{
+	struct itimerspec lSpec = {
+		.it_interval = { .tv_sec = 0, .tv_nsec = 0 },
+		.it_value = { .tv_sec = iSec, .tv_nsec = iNsec }
+	};
+
+	// Set timer properties
+	if( timerfd_settime( iEvent->fd, 0, &lSpec, 0 ) == -1 ) {
+		trh_log( LOG_ERROR, "Failed to set timer. Error: %s\n", strerror( errno ) );
+		return TRH_TIMER_FAILED;
+	}
+
+	return TRH_OK;
+}
+
+int local_timer_event( TTrhEvent *iEvent )
+{
+	int lCode = TRH_OK;
+
+	TRH_ASSERT_ARG( iEvent != 0 && iEvent->ext.timer != 0, "Timer event handler received null argument." );
+
+	// Call timer event handler
+	if( iEvent->ext.timer->handle_timer_event )
+		iEvent->ext.timer->handle_timer_event( iEvent );
+
+	// If timer is not repeating, unregister it
+	if( iEvent->ext.timer->repeat == false ) {
+		trh_timer_stop( iEvent );
+		return TRH_OK;
+	}
+
+	// Renew the timer if it is repeating
+	else if( ( lCode = trh_timer_start( iEvent ) ) != TRH_OK ) {
+		trh_timer_release( iEvent );
+		return lCode;
+	}
+}
+
+int local_timer_error( TTrhEvent *iEvent )
+{
+	trh_log( LOG_ERROR, "Timer error\n" );
+	return TRH_TIMER_FAILED;
 }
 
 // #endregion

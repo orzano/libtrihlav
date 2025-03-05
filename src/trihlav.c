@@ -248,7 +248,7 @@ int trh_event_register( TTrhEvent *iEvent )
 	};
 
 	if( epoll_ctl( gsApplication.epoll_fd, EPOLL_CTL_ADD, iEvent->fd, &lEvent ) == -1 ) {
-		trh_log( LOG_ERROR, "Failed to add timer to epoll: %s.", strerror( errno ) );
+		trh_log( LOG_ERROR, "Failed to register event: %s.", strerror( errno ) );
 		return TRH_EPOLL_FAILED;
 	}
 
@@ -368,7 +368,7 @@ int local_epoll_init()
 
 int local_epoll_error()
 {
-	if( errno == EINTR && gsApplication.handle_error() == TRH_OK )
+	if( errno == EINTR && gsApplication.handle_error != 0 && gsApplication.handle_error() == TRH_OK )
 		return TRH_WAITING;
 
 	if( errno == EINTR )
@@ -386,12 +386,14 @@ int local_epoll_event( struct epoll_event *iEvent )
 	// Check if file descriptor has been closed, or network connection has been lost.
 	if( iEvent->events & EPOLLERR ) {
 		trh_log( LOG_WARNING, "EPOLLERR on fd %d\n", iEvent->data.fd );
-		lEvent->handle_error( lEvent );
+		if( lEvent->handle_error != 0 )
+			lEvent->handle_error( lEvent );
 		return TRH_EPOLL_ERROR;
 	}
 
 	// Check if file descriptor is ready for reading.
 	if( iEvent->events & EPOLLIN ) {
+		assert( lEvent->handle_event != 0 );
 		lEvent->handle_event( lEvent );
 	}
 

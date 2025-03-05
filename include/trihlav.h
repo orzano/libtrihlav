@@ -60,6 +60,15 @@
 #define TRH_DBUS_SEND_FAILED		-67
 #define TRH_DBUS_PROCESS_FAILED		-68
 
+
+#define TRH_ASSERT_ARG( cond, msg ) \
+	if( ! ( cond ) ) { \
+		trh_log( LOG_ERROR, "Assertion failed: " msg "\n" ); \
+		assert( cond ); \
+		return TRH_ARG_INVALID; \
+	}
+
+
 #define _cleanup_(f) __attribute__((cleanup(f)))
 
 typedef const char* chars;
