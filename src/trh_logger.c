@@ -89,9 +89,9 @@ void trh_log( LogSeverity iSeverity, chars iMessage, ... )
 
 	va_start( args, iMessage );
 	if( lTime - gsLog.time > 0.1 )
-		printf( "\033[0;33m%0.3f\033[0m ", lTime - gsLog.time );
+		printf( "\033[0;33m%06.3f\033[0m ", lTime - gsLog.time );
 	else
-		printf( "%0.3f ", lTime - gsLog.time );
+		printf( "%06.3f ", lTime - gsLog.time );
 	printf( "%s", lTextSeverity );
 	vprintf( iMessage, args );
 	gsLog.time = lTime;
