@@ -1,5 +1,6 @@
 {
 	"files.associations": {
-		"trh_timer.h": "c"
+		"trh_timer.h": "c",
+		"trihlav.h": "c"
 	}
 }

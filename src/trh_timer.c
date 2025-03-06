@@ -8,7 +8,6 @@
 
 #include "trh_timer.h"
 
-#include <assert.h>
 #include <string.h>
 #include <errno.h>
 #include <sys/timerfd.h>

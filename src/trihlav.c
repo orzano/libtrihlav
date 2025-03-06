@@ -8,7 +8,6 @@
 
 #include <string.h>
 #include <errno.h>
-#include <assert.h>
 #include <signal.h>
 #include <execinfo.h>
 #include <sys/epoll.h>
