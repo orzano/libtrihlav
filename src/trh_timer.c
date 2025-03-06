@@ -147,7 +147,6 @@ int local_timer_event( TTrhEvent *iEvent )
 	// If timer is not repeating, unregister it
 	if( iEvent->ext.timer->repeat == false ) {
 		trh_timer_stop( iEvent );
-		return TRH_OK;
 	}
 
 	// Renew the timer if it is repeating
@@ -155,6 +154,8 @@ int local_timer_event( TTrhEvent *iEvent )
 		trh_timer_release( iEvent );
 		return lCode;
 	}
+
+	return TRH_OK;
 }
 
 int local_timer_error( TTrhEvent *iEvent )
