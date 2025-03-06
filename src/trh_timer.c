@@ -27,15 +27,8 @@ int trh_timer_init( TTrhTimerProperties *iProperties, TTrhEvent **oEvent )
 	int lCode = TRH_OK;
 
 	// Validate input arguments
-	if( iProperties == 0 ) {
-		trh_log( LOG_ERROR, "Invalid argument: timer roperties\n" );
-		return TRH_ARG_INVALID;
-	}
-	
-	if( oEvent == 0 ) {
-		trh_log( LOG_ERROR, "Invalid argument: timer object is null\n" );
-		return TRH_ARG_INVALID;
-	}
+	TRH_ASSERT_ARG( iProperties != 0, "Failed to init timer - invalid setup." );
+	TRH_ASSERT_ARG( oEvent != 0, "Failed to init timer - invalid output argument." );
 
 	// Allocate memory for timer object
 	lEvent = (TTrhEvent*)malloc( sizeof( TTrhEvent ) );

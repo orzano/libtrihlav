@@ -237,10 +237,7 @@ void trh_release()
 
 int trh_event_register( TTrhEvent *iEvent )
 {
-	if( iEvent == 0 ) {
-		trh_log( LOG_ERROR, "Failed to register event. Event is null.\n" );
-		return TRH_ARG_INVALID;
-	}
+	TRH_ASSERT_ARG( iEvent != 0, "Failed to register event. Event is null." );
 
 	struct epoll_event lEvent = {
 		.events = EPOLLIN,

@@ -46,8 +46,7 @@ int trh_dbus_init( chars iDestination, chars iPath, chars iInterface, const sd_b
 {
 	int lRetCode = TRH_OK;
 
-	if( iDestination == 0 || iPath == 0 || iInterface == 0 || iVtable == 0 )
-		return TRH_ARG_INVALID;
+	TRH_ASSERT_ARG( iDestination != 0 && iPath != 0 && iInterface != 0 && iVtable != 0, "Failed to init dbus." );
 
 	gsBus.destination = iDestination;
 	gsBus.obj_path = iPath;
@@ -108,8 +107,7 @@ void* trh_dbus_ptr()
 
 // static int local_dbus_validate_message( TTrhDbusMessage *iMsg )
 // {
-// 	if( iMsg == 0 || iMsg->destination == 0 || iMsg->path == 0 || iMsg->interface == 0 || iMsg->member == 0 || iMsg->response == 0 )
-// 		return TRH_ARG_INVALID;
+//	TRH_ASSERT_ARG( iMsg != 0 && iMsg->destination != 0 && iMsg->path != 0 && iMsg->interface != 0 && iMsg->member != 0 && iMsg->response != 0, "Failed to validate dbus message." );
 
 // 	return TRH_OK;
 // }
