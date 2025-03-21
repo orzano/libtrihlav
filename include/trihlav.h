@@ -141,8 +141,13 @@ void trh_set_loop_error_handler( handle_loop_error iHandler );
 
 /**
  * @brief Update application state.
+ * @retval TRH_OK on success.
+ * @retval TRH_WAITING No events to process.
+ * @retval TRH_EPOLL_FAILED Failed to wait for events (interrupt signal received?)
  * 
  * - update time, dt
+ * - epoll wait for events (non-blocking)
+ * 
  */
 int trh_update();
 

@@ -162,7 +162,6 @@ void trh_set_loop_error_handler( handle_loop_error iHandler )
 	gsApplication.handle_error = iHandler;
 }
 
-// Update time
 int trh_update()
 {
 	double lTime = trh_time();
@@ -174,10 +173,10 @@ int trh_update()
 	gsApplication.time_app += gsApplication.dt;
 	pthread_mutex_unlock( &gsApplication.mutex );
 
-	int lEventCount = epoll_wait( gsApplication.epoll_fd, lEvents, EPOLL_EVENTS, 10 );
+	int lEventCount = epoll_wait( gsApplication.epoll_fd, lEvents, EPOLL_EVENTS, 0 );
 
 	if( lEventCount == -1 )
-		local_epoll_error();
+		return local_epoll_error();
 
 	for( int ii = 0; ii < lEventCount; ii++ )
 		local_epoll_event( &lEvents[ii] );
