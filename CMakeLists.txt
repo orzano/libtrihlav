@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 3.7.2 )
+cmake_minimum_required( VERSION 3.10 )
 
 set( APPLICATION_NAME trihlav )
 set( APPLICATION_VERSION "25.03.21" )
