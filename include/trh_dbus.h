@@ -7,7 +7,6 @@
 #ifndef TRH_DBUS_H
 #define TRH_DBUS_H
 
-#include "trihlav.h"
 #include <systemd/sd-bus.h>
 
 

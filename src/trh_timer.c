@@ -6,11 +6,15 @@
 
 // #region Includes
 
+#include "trihlav.h"
+#include "trh_logger.h"
 #include "trh_timer.h"
 
 #include <string.h>
 #include <errno.h>
 #include <sys/timerfd.h>
+
+// #endregion
 
 static int local_timer_init( TTrhTimerProperties *iProperties, TTrhEvent *iEvent );
 static int local_timer_set( TTrhEvent *iEvent, time_t iSec, time_t iNsec );

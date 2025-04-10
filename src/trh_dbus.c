@@ -6,7 +6,10 @@
 
 // #region Includes
 
+#include "trihlav.h"
+#include "trh_logger.h"
 #include "trh_dbus.h"
+
 
 // #endregion
 

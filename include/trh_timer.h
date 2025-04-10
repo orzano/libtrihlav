@@ -7,8 +7,7 @@
 #ifndef TRH_TIMER_H
 #define TRH_TIMER_H
 
-#include "trihlav.h"
-
+struct TTrhEvent;
 struct TTrhTimer;
 
 typedef struct TTrhTimerProperties {
@@ -60,4 +59,4 @@ void trh_timer_stop( TTrhEvent *oEvent );
  */
 void trh_timer_release( TTrhEvent *iEvent );
 
-#endif // TRH_DBUS_H
+#endif // TRH_TIMER_H

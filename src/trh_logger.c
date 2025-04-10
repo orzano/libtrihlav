@@ -1,6 +1,6 @@
 /*
- * @brief Essential includes and generic defines
- * @copyright Copyright © 2022-2024 Trihlav, s.r.o.
+ * @brief Application Logger
+ * @copyright Copyright © 2022-2025 Trihlav, s.r.o.
  * @license MIT License / see LICENSE file
  */
 
@@ -11,6 +11,8 @@
 #include <time.h>
 
 #include "trihlav.h"
+#include "trh_std.h"
+#include "trh_logger.h"
 
 // #endregion
 

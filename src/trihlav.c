@@ -13,6 +13,8 @@
 #include <sys/epoll.h>
 
 #include "trihlav.h"
+#include "trh_std.h"
+#include "trh_logger.h"
 
 // #endregion
 
