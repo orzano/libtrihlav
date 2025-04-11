@@ -24,7 +24,23 @@
 #define PATH_SEP_C				'/'
 
 
+// #region Static variables
+
+/// Application paths
+char *gsPaths[TRH_ASSETS];
+
+// #endregion
+
+
 // #region Exported functions
+
+// Reset all local data.
+int trh_std_init()
+{
+	bzero( gsPaths, sizeof( gsPaths ) );
+	return TRH_OK;
+}
+
 
 // Get system time
 double trh_time()
@@ -35,6 +51,75 @@ double trh_time()
 
 	return (double)( lTime.tv_sec ) + (double)( lTime.tv_nsec ) / 1000000000.0;
 }
+
+
+// #region GET PATH
+
+static chars local_get_path_home()
+{
+	if( gsPaths[TRH_HOME] != 0 ) return gsPaths[TRH_HOME];
+	gsPaths[TRH_HOME] = strdup( getenv( "HOME" ) );
+	return gsPaths[TRH_HOME];
+}
+
+static chars local_get_path_xdg( chars iProjectName, chars iEnvVar, chars iDefaultPath, char **oPath )
+{
+	// HOME or XDG_* env variable.
+	char* lEnvPath = 0;
+
+	// If path is already defined, return its value.
+	if( *oPath != 0 )
+		return *oPath;
+
+	// - Try get value of provided env variable. XDG_* is not set up on most systems by default.
+	// - The second condition checks if the combined path is less than PATH_MAX chars long.
+	if( ( lEnvPath = getenv( iEnvVar ) ) != 0 ) {
+		*oPath = malloc( strlen( lEnvPath ) + strlen( iProjectName ) + 3 );
+		sprintf( *oPath, "%s" PATH_SEP "%s" PATH_SEP, lEnvPath, iProjectName );
+	}
+
+	// If XDG_* is not defined, and iDefaultPath points to an absolute path, set iDefaultPath.
+	else if( iDefaultPath[0] == PATH_SEP_C ) {
+		*oPath = malloc( strlen( iDefaultPath ) + strlen( iProjectName ) + 2 );
+		sprintf( *oPath, "%s%s" PATH_SEP, iDefaultPath, iProjectName );
+	}
+
+	// If XDG_* is not defined, and iDefaultPath is relative, generate path pointing to $HOME/iDefaultPath.
+	else {
+		chars lPathHome = local_get_path_home();
+		*oPath = malloc( strlen( lPathHome ) + strlen( iDefaultPath ) + strlen( iProjectName ) + 2 );
+		sprintf( *oPath, "%s%s%s" PATH_SEP, lPathHome, iDefaultPath, iProjectName );
+	}
+
+	trh_create_path( *oPath );
+
+	return *oPath;
+}
+
+static chars local_get_path_assets( chars iProjectName )
+{
+	if( gsPaths[TRH_ASSETS] != 0 ) return gsPaths[TRH_ASSETS];
+	chars lPath = "../share/";
+	gsPaths[TRH_ASSETS] = malloc( strlen( lPath ) + strlen( iProjectName ) + 2 );
+	sprintf( gsPaths[TRH_ASSETS], "%s%s" PATH_SEP, lPath, iProjectName );
+	return gsPaths[TRH_ASSETS];
+}
+
+// Return path to HOME, TEMP, RUNTIME, CONFIG, DATA or ASSETS directory.
+void trh_get_path( chars iProjectName, PathType iType, chars oPath )
+{
+	switch( iType ) {
+		case TRH_HOME: oPath = local_get_path_home(); break;
+		case TRH_TEMP: oPath = local_get_path_xdg( iProjectName, "XDG_CACHE_HOME", ".cache/", &gsPaths[TRH_TEMP] ); break;
+		case TRH_RUNTIME: oPath = local_get_path_xdg( iProjectName, "XDG_RUNTIME_DIR", "/run/", &gsPaths[TRH_RUNTIME] ); break;
+		case TRH_CONFIG: oPath = local_get_path_xdg( iProjectName, "XDG_CONFIG_HOME", ".config/", &gsPaths[TRH_CONFIG] ); break;
+		case TRH_DATA: oPath = local_get_path_xdg( iProjectName, "XDG_DATA_HOME", ".local/share/", &gsPaths[TRH_DATA] ); break;
+		case TRH_ASSETS: oPath = local_get_path_assets( iProjectName ); break;//"../share/" PRJ_NAME PATH_SEP; break;
+		default: oPath = local_get_path_xdg( iProjectName, "XDG_CACHE_HOME", ".cache", &gsPaths[TRH_TEMP] ); break;
+	}
+}
+
+// #endregion // GET PATH
 
 
 // Check if file/directory/socket/link exists.
@@ -174,6 +259,15 @@ int trh_create_path( chars iPath )
 	}
 
 	return TRH_OK;
+}
+
+void trh_std_release()
+{
+	for( int ii = 0; ii < TRH_ASSETS; ii++ ) {
+		if( gsPaths[ii] != 0 ) {
+			FREE_PTR( gsPaths[ii] );
+		}
+	}
 }
 
 

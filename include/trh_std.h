@@ -36,9 +36,30 @@ typedef enum PathType {
 } PathType;
 
 /**
+ * @brief Clear application state.
+ * @return TRH_OK on success.
+ */
+int trh_std_init();
+
+/**
  * @brief Get current system time as real number.
  */
 double trh_time();
+
+/**
+ * @brief Return system or local path.
+ * @param iProjectName Name of the project. If empty, default path will be used.
+ * @param iType Type of the requested path.
+ *
+ * Acctepted paths:
+ * - \a HOME = /home/{username}/ - path to user's home directory
+ * - \a TEMP = $XDG_CACHE_HOME/PRJ_NAME/ or "/tmp/PRJ_NAME/"
+ * - \a RUNTIME - $XDG_RUNTIME_DIR/PRJ_NAME/ ("/run/user/1000" on arch) or "/tmp/PRJ_NAME/"
+ * - \a CONFIG - $XDG_CONFIG_HOME/PRJ_NAME/ or $HOME/.config/PRJ_NAME/
+ * - \a DATA - $XDK_DATA_HOME/PRJ_NAME/ or $HOME/.local/share/PRJ_NAME/
+ * - \a ASSETS - ../share/PRJ_NAME/ 
+ */
+void trh_get_path( chars iProjectName, PathType iType, chars oPath );
 
 /**
  * @brief Test if file exists (at specified path).
@@ -92,6 +113,11 @@ int trh_create_directory( chars iPath, bool iLog );
  * @retval TRH_FILE_ERROR Insuficient privileges.
  */
 int trh_create_path( chars iPath );
+
+/**
+ * @brief Clear std resources.
+ */
+void trh_std_release();
 
 #endif // TRH_STD_H
  

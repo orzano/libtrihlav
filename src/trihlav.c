@@ -133,6 +133,10 @@ TApplication *trh_init( void *iExt )
 	// Register system signals.
 	if( local_signal_register() != TRH_OK )
 		return 0;
+	
+	// Allocate std resources
+	if( trh_std_init() != TRH_OK )
+		return 0;
 
 	// Initialize main thread mutex.
 	pthread_mutex_init( &gsApplication.mutex, 0 );
@@ -241,6 +245,8 @@ void trh_release()
     pthread_mutex_destroy( &gsApplication.mutex );
 	// Release epoll object
 	local_epoll_release();
+	// Release std resources
+	trh_std_release();
 }
 
 // #endregion
