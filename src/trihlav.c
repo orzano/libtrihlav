@@ -169,11 +169,11 @@ int trh_update()
 	double lTime = trh_time();
 	struct epoll_event lEvents[EPOLL_EVENTS];
 
-	pthread_mutex_lock( &gsApplication.mutex );
+	trh_app_lock();
 	gsApplication.dt = lTime - gsApplication.time_system;
 	gsApplication.time_system = lTime;
 	gsApplication.time_app += gsApplication.dt;
-	pthread_mutex_unlock( &gsApplication.mutex );
+	trh_app_unlock();
 
 	int lEventCount = epoll_wait( gsApplication.epoll_fd, lEvents, EPOLL_EVENTS, 0 );
 
@@ -189,9 +189,9 @@ int trh_update()
 double trh_get_app_time()
 {
 	double lResult = 0;
-	pthread_mutex_lock( &gsApplication.mutex );
+	trh_app_lock();
 	lResult = gsApplication.time_app;
-	pthread_mutex_unlock( &gsApplication.mutex );
+	trh_app_unlock();
 	return lResult;
 }
 
@@ -199,27 +199,39 @@ double trh_get_app_time()
 double trh_get_dt()
 {
 	double lResult = 0;
-	pthread_mutex_lock( &gsApplication.mutex );
+	trh_app_lock();
 	lResult = gsApplication.dt;
-	pthread_mutex_unlock( &gsApplication.mutex );
+	trh_app_unlock();
 	return lResult;
+}
+
+// Lock application mutex.
+void trh_app_lock()
+{
+	pthread_mutex_lock( &gsApplication.mutex );
+}
+
+// Unlock application mutex.
+void trh_app_unlock()
+{
+	pthread_mutex_unlock( &gsApplication.mutex );
 }
 
 // Set flag 'application is now terminating'.
 void trh_terminate()
 {
-	pthread_mutex_lock( &gsApplication.mutex );
+	trh_app_lock();
 	gsApplication.terminate = true;
-	pthread_mutex_unlock( &gsApplication.mutex );
+	trh_app_unlock();
 }
 
 // Return 'true' if application is terminating.
 bool trh_is_terminating()
 {
 	bool lResult = false;
-	pthread_mutex_lock( &gsApplication.mutex );
+	trh_app_lock();
 	lResult = gsApplication.terminate;
-	pthread_mutex_unlock( &gsApplication.mutex );
+	trh_app_unlock();
 	return lResult;
 }
 

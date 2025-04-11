@@ -147,6 +147,16 @@ double trh_get_app_time();
 double trh_get_dt();
 
 /**
+ * @brief Lock application mutex.
+ */
+void trh_app_lock();
+
+/**
+ * @brief Unlock application mutex.
+ */
+void trh_app_unlock();
+
+/**
  * @brief Stop the application. Thread-safe.
  */
 void trh_terminate();
