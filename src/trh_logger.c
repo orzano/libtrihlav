@@ -63,9 +63,11 @@ int trh_log_init( chars iFilename )
 	gsLog.time = trh_time();
 
 	if( ( gsLog.file = fopen( iFilename, "a" ) ) == 0 ) {
-		printf( TRH_LOG_WARN "Failed to open log file. Logging disabled.\n" );
+		printf( TRH_LOG_WARN "Failed to open log file '%s'. Logging disabled.\n", iFilename );
 		return TRH_FAILED;
 	}
+
+	printf( TRH_LOG_NOTE "Logging to file '%s'.\n", iFilename );
 
 	return TRH_OK;
 }
@@ -156,7 +158,14 @@ void trh_log_end()
 void trh_log_set_severity_level( LogSeverity iSeverity )
 {
 	gsLog.severity = iSeverity;
-	trh_log( LOG_NOTE, "Verbose mode: '%s'\n", iSeverity == LOG_DEBUG ? "ON" : "OFF" );
+
+	switch( iSeverity )
+	{
+	case LOG_DEBUG: printf( TRH_LOG_OK "Log severity set to DEBUG.\n" ); break;
+	case LOG_NOTE: printf( TRH_LOG_OK "Log severity set to NOTE.\n" ); break;
+	case LOG_WARNING: printf( TRH_LOG_OK "Log severity set to WARNING.\n" ); break;
+	case LOG_ERROR: printf( TRH_LOG_OK "Log severity set to ERROR.\n" ); break;
+	}
 }
 
 void trh_log_release()
