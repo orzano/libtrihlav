@@ -36,7 +36,10 @@ typedef struct TTrhDbus {
 
 static TTrhDbus gsBus = {
 	.ptr = 0,
-	.slot = 0
+	.slot = 0,
+	.destination = 0,
+	.obj_path = 0,
+	.interface = 0
 };
 
 // #endregion
@@ -161,13 +164,11 @@ int trh_dbus_reply( sd_bus_message *iMsg )
 	return TRH_OK;
 }
 
-int trh_dbus_reply_error( sd_bus_message *iMsg, chars iText, int iErrno )
+int trh_dbus_reply_error( sd_bus_error *iError, chars iText, int iErrno )
 {
-	//int local_reply_error( sd_bus_message *iMessage, chars iText, int iErrno, int iRetCode )
-	sd_bus_error lError = SD_BUS_ERROR_NULL;
 	trh_log( LOG_ERROR, "SDBUS %s. Error: %s\n", iText, strerror( -iErrno ) );
-	sd_bus_error_set_errno( &lError, iErrno );
-	sd_bus_reply_method_error( iMsg, &lError );
+	sd_bus_error_set_errno( iError, iErrno );
+	sd_bus_error_set( iError, gsBus.interface, iText );
 	return TRH_DBUS_ARG_FAILED;
 }
 
