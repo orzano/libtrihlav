@@ -168,7 +168,6 @@ int trh_dbus_reply_error( sd_bus_error *iError, chars iText, int iErrno )
 {
 	trh_log( LOG_ERROR, "SDBUS %s. Error: %s\n", iText, strerror( -iErrno ) );
 	sd_bus_error_set_errno( iError, iErrno );
-	sd_bus_error_set( iError, gsBus.interface, iText );
 	return TRH_DBUS_ARG_FAILED;
 }
 
