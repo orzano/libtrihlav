@@ -410,8 +410,8 @@ int local_epoll_event( struct epoll_event *iEvent )
 
 	// Check if file descriptor is ready for reading.
 	if( iEvent->events & EPOLLIN ) {
-		assert( lEvent->handle_event != 0 );
-		lEvent->handle_event( lEvent );
+		assert( lEvent->handle_triggered != 0 );
+		lEvent->handle_triggered( lEvent );
 	}
 
 	return TRH_OK;

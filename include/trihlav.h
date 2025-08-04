@@ -188,7 +188,7 @@ typedef struct TTrhEvent {
 	/// File descriptor registered with epoll.
 	int fd;
 	/// Callback function executed when event is triggered.
-	handle_event handle_event;
+	handle_event handle_triggered;
 	/// Callback function executed on error.
 	handle_event handle_error;
 

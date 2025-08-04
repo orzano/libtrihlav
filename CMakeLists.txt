@@ -1,7 +1,7 @@
 cmake_minimum_required( VERSION 3.10 )
 
 set( APPLICATION_NAME trihlav )
-set( APPLICATION_VERSION "25.07.09" )
+set( APPLICATION_VERSION "25.08.04" )
 
 project( trihlav VERSION ${APPLICATION_VERSION} )
 
