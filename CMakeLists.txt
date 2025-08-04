@@ -20,8 +20,25 @@ include_directories( include )
 
 file( GLOB SOURCE_FILES src/*.c )
 
-add_library( trihlav SHARED ${SOURCE_FILES} )
+if( TRIHLAV_LINK_STATIC )
+	add_library( trihlav STATIC ${SOURCE_FILES} )
+	set_target_properties( trihlav
+		PROPERTIES
+		VERSION ${APPLICATION_VERSION}
+	)
+	set( TRIHLAV_INSTALL_DEST "ARCHIVE" )
+else()
+	add_library( trihlav SHARED ${SOURCE_FILES} )
+	set_target_properties( trihlav
+	  PROPERTIES
+	  VERSION ${APPLICATION_VERSION}
+	  SOVERSION 1
+	)
+	set( TRIHLAV_INSTALL_DEST "LIBRARY" )
+	install( TARGETS trihlav CONFIGURATIONS ${CMAKE_BUILD_TYPE} ${TRIHLAV_INSTALL_DEST} DESTINATION "${CMAKE_INSTALL_LIB}" )
+endif()
 
+set_property( TARGET trihlav PROPERTY C_STANDARD 11 )
 target_link_libraries(
 	trihlav
 	json-c
@@ -29,11 +46,3 @@ target_link_libraries(
 	mnl
 )
 
-set_property( TARGET trihlav PROPERTY C_STANDARD 11 )
-set_target_properties( trihlav
-  PROPERTIES
-  VERSION ${APPLICATION_VERSION}
-  SOVERSION 1
-)
-
-install( TARGETS trihlav CONFIGURATIONS ${CMAKE_BUILD_TYPE} LIBRARY DESTINATION  "${CMAKE_INSTALL_LIB}" )
