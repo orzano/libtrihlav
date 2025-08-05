@@ -111,12 +111,12 @@ void trh_version( TAppVersion *oVersion )
 	assert( oVersion != 0 );
 	if( oVersion == 0 ) return;
 
-	if( oVersion->major != 0 ) oVersion->major = LIB_TRH_VERSION_MAJOR;
-	if( oVersion->minor != 0 ) oVersion->minor = LIB_TRH_VERSION_MINOR;
-	if( oVersion->patch != 0 ) oVersion->patch = LIB_TRH_VERSION_PATCH;
+	oVersion->major = LIB_TRH_VERSION_MAJOR;
+	oVersion->minor = LIB_TRH_VERSION_MINOR;
+	oVersion->patch = LIB_TRH_VERSION_PATCH;
 
 	// Convert major, minor and patch to version number using shift operands
-	if( oVersion->ver != 0 ) oVersion->ver =
+	oVersion->ver =
 		( LIB_TRH_VERSION_MAJOR << 16 ) |
 		( LIB_TRH_VERSION_MINOR << 8 ) |
 		( LIB_TRH_VERSION_PATCH );
