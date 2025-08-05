@@ -1,6 +1,10 @@
 {
 	"files.associations": {
+		"*.embeddedhtml": "html",
 		"trh_timer.h": "c",
-		"trihlav.h": "c"
+		"trihlav.h": "c",
+		"sd-bus.h": "c",
+		"inttypes.h": "c",
+		"_sd-common.h": "c"
 	}
 }
