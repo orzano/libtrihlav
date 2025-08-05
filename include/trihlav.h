@@ -20,6 +20,10 @@
 
 // #endregion
 
+// c++ compatibility
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 // #region Defines
 
@@ -216,5 +220,9 @@ void trh_event_unregister( TTrhEvent *iEvent );
 
 // #endregion // Events
 
+// c++ compatibility
+#ifdef __cplusplus
+}
+#endif
 
 #endif // TRHIHLAV_H

@@ -77,7 +77,7 @@ static int local_epoll_init();
  * @brief Executed when epoll_wait() returns -1.
  * @return TRH_WAITING An interrupt signal has been received and callback handler returned OK.
  * @return TRH_EPOLL_FAILED An error has been detected or callback handler did not return OK.
- * 
+ *
  * If callback handler is null, function always returns TRH_EPOLL_FAILED.
  * Callback handler is set (or disabled) using function \a trh_set_loop_error_handler.
  */
@@ -106,7 +106,7 @@ static TApplication gsApplication = { 0 };
 
 // #region Exported functions
 
-void trh_version(  TAppVersion *oVersion )
+void trh_version( TAppVersion *oVersion )
 {
 	assert( oVersion != 0 );
 	if( oVersion == 0 ) return;
@@ -133,7 +133,7 @@ TApplication *trh_init( void *iExt )
 	// Register system signals.
 	if( local_signal_register() != TRH_OK )
 		return 0;
-	
+
 	// Allocate std resources
 	if( trh_std_init() != TRH_OK )
 		return 0;
@@ -353,12 +353,12 @@ static int local_signal_register()
 	if( signal( SIGTERM, local_signal_handle_exit ) == SIG_ERR )
 		return local_signal_failed( SIGTERM );
 
-	// Historical signals		
+	// Historical signals
 
 	// hang-up - device is shuting down
 	if( signal( SIGHUP, local_signal_handle_exit ) == SIG_ERR )
 		return local_signal_failed( SIGHUP );
-	
+
 	if( signal( SIGQUIT, local_signal_handle_exit ) == SIG_ERR )
 		return local_signal_failed( SIGQUIT );
 

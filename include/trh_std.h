@@ -7,6 +7,11 @@
 #ifndef TRH_STD_H
 #define TRH_STD_H
 
+// c++ compatibility
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * @brief File type is mandatory argument passed to \a trh_file_exists.
  */
@@ -118,6 +123,11 @@ int trh_create_path( chars iPath );
  * @brief Clear std resources.
  */
 void trh_std_release();
+
+// c++ compatibility
+#ifdef __cplusplus
+}
+#endif
 
 #endif // TRH_STD_H
  

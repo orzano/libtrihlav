@@ -7,6 +7,11 @@
 #ifndef TRH_LOGGER_H
 #define TRH_LOGGER_H
 
+// c++ compatibility
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define TRH_ASSERT_ARG( cond, msg ) \
 	if( ! ( cond ) ) { \
 		trh_log( LOG_ERROR, "Assertion failed: " msg "\n" ); \
@@ -82,6 +87,10 @@ void trh_log_set_severity_level( LogSeverity iSeverity );
  */
 void trh_log_release();
 
+// c++ compatibility
+#ifdef __cplusplus
+}
+#endif
 
 #endif // TRH_LOGGER_H
  

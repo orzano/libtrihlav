@@ -9,6 +9,10 @@
 
 #include <systemd/sd-bus.h>
 
+// c++ compatibility
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * @brief IPC message executed in different process.
@@ -87,5 +91,10 @@ int trh_dbus_reply_error( sd_bus_error *iError, chars iText, int iErrno );
  * @brief Close dbus link.
  */
 void trh_dbus_release();
+
+// c++ compatibility
+#ifdef __cplusplus
+}
+#endif
 
 #endif // TRH_DBUS_H

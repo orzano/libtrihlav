@@ -7,6 +7,11 @@
 #ifndef TRH_TIMER_H
 #define TRH_TIMER_H
 
+// c++ compatibility
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 struct TTrhEvent;
 struct TTrhTimer;
 
@@ -58,5 +63,10 @@ void trh_timer_stop( TTrhEvent *oEvent );
  * - free memory
  */
 void trh_timer_release( TTrhEvent *iEvent );
+
+// c++ compatibility
+#ifdef __cplusplus
+}
+#endif
 
 #endif // TRH_TIMER_H
