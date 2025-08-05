@@ -46,6 +46,11 @@ typedef enum LogSeverity
 int trh_log_init( chars iFileName );
 
 /**
+ * @brief Log library version.
+ */
+void trh_log_version();
+
+/**
  * @brief Print and log a message.
  * @param iSeverity Severity of the message.
  * @param iMessage Message to be printed and logged. If null or empty, endline is printed.

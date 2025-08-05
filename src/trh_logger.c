@@ -72,6 +72,19 @@ int trh_log_init( chars iFilename )
 	return TRH_OK;
 }
 
+void trh_log_version()
+{
+	TAppVersion lAppVersion = { 0 };
+	trh_version( &lAppVersion );
+	trh_log(
+		LOG_NOTE, "libtrihlav v.%u.%u.%u (0x%08x)\n",
+		lAppVersion.major,
+		lAppVersion.minor,
+		lAppVersion.patch,
+		lAppVersion.ver
+	);
+}
+
 void trh_log( LogSeverity iSeverity, chars iMessage, ... )
 {
 	const int TimeLength = strlen( "YYYY-MM-DD HH:MM:SS" );
