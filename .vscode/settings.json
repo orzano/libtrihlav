@@ -5,6 +5,7 @@
 		"trihlav.h": "c",
 		"sd-bus.h": "c",
 		"inttypes.h": "c",
-		"_sd-common.h": "c"
+		"_sd-common.h": "c",
+		"timerfd.h": "c"
 	}
 }

@@ -63,14 +63,14 @@ int trh_timer_start( TTrhEvent *iEvent )
 {
 	TRH_ASSERT_ARG( iEvent != 0, "Failed to start timer" );
 	int lCode = local_timer_set( iEvent, iEvent->ext.timer->sec, iEvent->ext.timer->nsec );
-	iEvent->ext.timer->running = lCode == TRH_OK;
+	iEvent->ext.timer->state = lCode == TRH_OK ? TRH_TIMER_RUNNING : TRH_TIMER_STOPPED;
 	return TRH_OK;
 }
 
 void trh_timer_stop( TTrhEvent *iEvent )
 {
 	assert( iEvent != 0 );
-	iEvent->ext.timer->running = false;
+	iEvent->ext.timer->state = TRH_TIMER_STOPPED;
 	local_timer_set( iEvent, 0, 0 );
 }
 
@@ -148,8 +148,13 @@ int local_timer_event( TTrhEvent *iEvent )
 	if( iEvent->ext.timer->handle_timer_event )
 		iEvent->ext.timer->handle_timer_event( iEvent );
 
+	// If timer should be released, do it now
+	if( iEvent->ext.timer->state == TRH_TIMER_EXPIRED ) {
+		trh_timer_release( iEvent );
+	}
+
 	// If timer is not repeating, unregister it
-	if( iEvent->ext.timer->repeat == false ) {
+	else if( iEvent->ext.timer->repeat == false ) {
 		trh_timer_stop( iEvent );
 	}
 

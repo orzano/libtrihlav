@@ -15,11 +15,26 @@ extern "C" {
 struct TTrhEvent;
 struct TTrhTimer;
 
+typedef enum TTrhTimerState {
+	TRH_TIMER_STOPPED,
+	TRH_TIMER_RUNNING,
+	TRH_TIMER_EXPIRED
+} TTrhTimerState;
+
 typedef struct TTrhTimerProperties {
+	/// Timer duration.
 	time_t sec;
 	time_t nsec;
+
+	/// If true, timer will be repeated.
 	bool repeat;
-	bool running;
+
+	/// - RUNNING state is managed internally.
+	/// - STOPPED state is set when timer is stopped in \a trh_timer_stop() or \a repeat is false.
+	/// - EXPIRED state can be set in timer event handler ( \a handle_timer_event) to release the timer resources.
+	TTrhTimerState state;
+
+	// Attached user data.
 	void *ext;
 
 	// Called when timer event is triggered.
