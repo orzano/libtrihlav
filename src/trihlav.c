@@ -262,7 +262,6 @@ int trh_event_register( TTrhEvent *iEvent )
 		.data.ptr = iEvent
 	};
 
-	trh_log( LOG_DEBUG, "Registering event on fd %d\n", iEvent->fd );
 	if( epoll_ctl( gsApplication.epoll_fd, EPOLL_CTL_ADD, iEvent->fd, &lEvent ) == -1 ) {
 		trh_log( LOG_ERROR, "Failed to register event: %s.\n", strerror( errno ) );
 		return TRH_EPOLL_FAILED;
@@ -281,7 +280,6 @@ void trh_event_unregister( TTrhEvent *iEvent )
 	if( gsApplication.epoll_fd == -1 )
 		return;
 
-	trh_log( LOG_DEBUG, "Unregistering event on fd %d\n", iEvent->fd );
 	epoll_ctl( gsApplication.epoll_fd, EPOLL_CTL_DEL, iEvent->fd, 0 );
 }
 
