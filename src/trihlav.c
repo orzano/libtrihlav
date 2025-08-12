@@ -323,6 +323,8 @@ static void local_signal_handle_error( int iSignum )
 	else {
 		printf( "NO BAKCTRACE.\n" );
 	}
+
+	exit( 1 );
 }
 
 static int local_signal_register()
