@@ -64,7 +64,7 @@ double trh_time();
  * - \a DATA - $XDK_DATA_HOME/PRJ_NAME/ or $HOME/.local/share/PRJ_NAME/
  * - \a ASSETS - ../share/PRJ_NAME/ 
  */
-void trh_get_path( chars iProjectName, PathType iType, chars oPath );
+void trh_get_path( chars iProjectName, PathType iType, chars *oPath );
 
 /**
  * @brief Test if file exists (at specified path).

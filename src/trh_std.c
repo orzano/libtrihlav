@@ -106,16 +106,19 @@ static chars local_get_path_assets( chars iProjectName )
 }
 
 // Return path to HOME, TEMP, RUNTIME, CONFIG, DATA or ASSETS directory.
-void trh_get_path( chars iProjectName, PathType iType, chars oPath )
+void trh_get_path( chars iProjectName, PathType iType, chars *oPath )
 {
+	if( oPath == 0 )
+		return;
+
 	switch( iType ) {
-		case TRH_HOME: oPath = local_get_path_home(); break;
-		case TRH_TEMP: oPath = local_get_path_xdg( iProjectName, "XDG_CACHE_HOME", ".cache/", &gsPaths[TRH_TEMP] ); break;
-		case TRH_RUNTIME: oPath = local_get_path_xdg( iProjectName, "XDG_RUNTIME_DIR", "/run/", &gsPaths[TRH_RUNTIME] ); break;
-		case TRH_CONFIG: oPath = local_get_path_xdg( iProjectName, "XDG_CONFIG_HOME", ".config/", &gsPaths[TRH_CONFIG] ); break;
-		case TRH_DATA: oPath = local_get_path_xdg( iProjectName, "XDG_DATA_HOME", ".local/share/", &gsPaths[TRH_DATA] ); break;
-		case TRH_ASSETS: oPath = local_get_path_assets( iProjectName ); break;//"../share/" PRJ_NAME PATH_SEP; break;
-		default: oPath = local_get_path_xdg( iProjectName, "XDG_CACHE_HOME", ".cache", &gsPaths[TRH_TEMP] ); break;
+		case TRH_HOME: *oPath = local_get_path_home(); break;
+		case TRH_TEMP: *oPath = local_get_path_xdg( iProjectName, "XDG_CACHE_HOME", ".cache/", &gsPaths[TRH_TEMP] ); break;
+		case TRH_RUNTIME: *oPath = local_get_path_xdg( iProjectName, "XDG_RUNTIME_DIR", "/run/", &gsPaths[TRH_RUNTIME] ); break;
+		case TRH_CONFIG: *oPath = local_get_path_xdg( iProjectName, "XDG_CONFIG_HOME", ".config/", &gsPaths[TRH_CONFIG] ); break;
+		case TRH_DATA: *oPath = local_get_path_xdg( iProjectName, "XDG_DATA_HOME", ".local/share/", &gsPaths[TRH_DATA] ); break;
+		case TRH_ASSETS: *oPath = local_get_path_assets( iProjectName ); break;//"../share/" PRJ_NAME PATH_SEP; break;
+		default: *oPath = local_get_path_xdg( iProjectName, "XDG_CACHE_HOME", ".cache", &gsPaths[TRH_TEMP] ); break;
 	}
 }
 
