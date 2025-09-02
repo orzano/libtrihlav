@@ -58,7 +58,21 @@ double trh_time()
 static chars local_get_path_home()
 {
 	if( gsPaths[TRH_HOME] != 0 ) return gsPaths[TRH_HOME];
-	gsPaths[TRH_HOME] = strdup( getenv( "HOME" ) );
+
+	chars lHomeEnv = getenv( "HOME" );
+
+	if( lHomeEnv == 0 || lHomeEnv[0] == 0 ) {
+		trh_log( LOG_ERROR, "Environment variable HOME is not set.\n" );
+		return "";
+	}
+
+	size_t lHomeLen = strlen( lHomeEnv );
+	gsPaths[TRH_HOME] = malloc( lHomeLen + 2 );
+	strcpy( gsPaths[TRH_HOME], lHomeEnv );
+
+	if( gsPaths[TRH_HOME][lHomeLen - 1 ] != PATH_SEP_C )
+		strcat( gsPaths[TRH_HOME], PATH_SEP );
+
 	return gsPaths[TRH_HOME];
 }
 
@@ -118,7 +132,7 @@ void trh_get_path( chars iProjectName, PathType iType, chars *oPath )
 		case TRH_CONFIG: *oPath = local_get_path_xdg( iProjectName, "XDG_CONFIG_HOME", ".config/", &gsPaths[TRH_CONFIG] ); break;
 		case TRH_DATA: *oPath = local_get_path_xdg( iProjectName, "XDG_DATA_HOME", ".local/share/", &gsPaths[TRH_DATA] ); break;
 		case TRH_ASSETS: *oPath = local_get_path_assets( iProjectName ); break;//"../share/" PRJ_NAME PATH_SEP; break;
-		default: *oPath = local_get_path_xdg( iProjectName, "XDG_CACHE_HOME", ".cache", &gsPaths[TRH_TEMP] ); break;
+		default: *oPath = local_get_path_xdg( iProjectName, "XDG_CACHE_HOME", ".cache/", &gsPaths[TRH_TEMP] ); break;
 	}
 }
 
