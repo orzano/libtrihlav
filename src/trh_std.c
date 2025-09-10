@@ -27,7 +27,7 @@
 // #region Static variables
 
 /// Application paths
-char *gsPaths[TRH_ASSETS];
+char *gsPaths[TRH_ASSETS+1] = { 0 };
 
 // #endregion
 
@@ -37,7 +37,7 @@ char *gsPaths[TRH_ASSETS];
 // Reset all local data.
 int trh_std_init()
 {
-	bzero( gsPaths, sizeof( gsPaths ) );
+	memset( gsPaths, 0, sizeof( gsPaths ) );
 	return TRH_OK;
 }
 

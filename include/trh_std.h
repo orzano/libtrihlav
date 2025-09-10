@@ -27,7 +27,7 @@ typedef enum FileType {
  */
 typedef enum PathType {
 	/// Path to HOME directory.
-	TRH_HOME,
+	TRH_HOME = 0,
 	/// Path to temporary directory $XDG_CACHE_HOME/PRJ_NAME/ or /tmp/PRJ_NAME/
 	TRH_TEMP,
 	/// Path to run-time directory ($XDG_RUNTIME_DIR/PRJ_NAME/ or "/run/PRJ_NAME/")
