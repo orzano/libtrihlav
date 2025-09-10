@@ -118,7 +118,7 @@ void trh_log( LogSeverity iSeverity, chars iMessage, ... )
 		char lTimeBuffer[TimeLength+1]; // YYYY-MM-DD HH:MM:SS
 		time_t lUnixTimestamp = time(0);
 
-		bzero( lTimeBuffer, TimeLength+1 );
+		memset( lTimeBuffer, 0, TimeLength+1 );
 		strftime( lTimeBuffer, sizeof(lTimeBuffer), "%Y-%m-%d %T", localtime( &lUnixTimestamp ) );
 
 		va_start( args, iMessage );

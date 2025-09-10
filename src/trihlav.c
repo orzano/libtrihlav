@@ -125,7 +125,7 @@ void trh_version( TAppVersion *oVersion )
 // Initialize application object.
 TApplication *trh_init( void *iExt )
 {
-	bzero( &gsApplication, sizeof( gsApplication ) );
+	memset( &gsApplication, 0, sizeof( gsApplication ) );
 
 	gsApplication.time_system = trh_time();
 	gsApplication.ext = iExt;

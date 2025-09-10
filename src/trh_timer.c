@@ -36,7 +36,7 @@ int trh_timer_init( TTrhTimerProperties *iProperties, TTrhEvent **oEvent )
 	// Allocate memory for timer object
 	lEvent = (TTrhEvent*)malloc( sizeof( TTrhEvent ) );
 	if( lEvent == 0 ) return TRH_OUT_OF_MEM;
-	bzero( lEvent, sizeof( TTrhEvent ) );
+	memset( lEvent, 0, sizeof( TTrhEvent ) );
 	lEvent->fd = -1;
 	lEvent->handle_triggered = local_timer_event;
 	lEvent->handle_error = local_timer_error;
