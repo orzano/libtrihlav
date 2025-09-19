@@ -55,6 +55,7 @@ extern "C" {
 #define TRH_OUT_OF_MEM				-2
 #define TRH_SIGNAL_FAILED			-3
 #define TRH_UNINITIALIZED			-4
+#define TRH_NOT_IMPLEMENTED			-5
 
 #define TRH_FILE_ERROR				-16
 
