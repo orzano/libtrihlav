@@ -184,6 +184,7 @@ void trh_dbus_release()
 	if( gsBus.ptr != 0 ) {
 		sd_bus_release_name( gsBus.ptr, gsBus.destination );
 		sd_bus_close( gsBus.ptr );
+		sd_bus_unref( gsBus.ptr );
 		gsBus.ptr = 0;
 	}
 }
