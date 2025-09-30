@@ -21,6 +21,11 @@
 #define TRH_LOG_WARN			"[WARN]   "
 #define TRH_LOG_ERROR			"[ERROR]  "
 
+#define TRH_LOG_DEBUG_CLI		"\033[0;37m[DEBUG]  \033[0m"
+#define TRH_LOG_NOTE_CLI		"[...]    "
+#define TRH_LOG_WARN_CLI		"\033[0;33m[WARN]   \033[0m"
+#define TRH_LOG_ERROR_CLI		"\033[0;91m[ERROR]  \033[0m"
+
 #define TRH_LOG_OK				"[OK]"
 #define TRH_LOG_FAILED			"[FAILED]"
 
@@ -94,14 +99,15 @@ void trh_log( LogSeverity iSeverity, chars iMessage, ... )
 
 	va_list args;
 	double lTime = trh_time();
-	chars lTextSeverity;
+	chars lTextSeverityFile = 0;
+	chars lTextSeverityCli = 0;
 
 	switch( iSeverity )
 	{
-	case LOG_DEBUG: lTextSeverity = TRH_LOG_DEBUG; break;
-	case LOG_NOTE: lTextSeverity = TRH_LOG_NOTE; break;
-	case LOG_WARNING: lTextSeverity = TRH_LOG_WARN; break;
-	case LOG_ERROR: lTextSeverity = TRH_LOG_ERROR; break;	
+	case LOG_DEBUG:   lTextSeverityFile = TRH_LOG_DEBUG; lTextSeverityCli = TRH_LOG_DEBUG_CLI; break;
+	case LOG_NOTE:    lTextSeverityFile = TRH_LOG_NOTE;  lTextSeverityCli = TRH_LOG_NOTE_CLI;  break;
+	case LOG_WARNING: lTextSeverityFile = TRH_LOG_WARN;  lTextSeverityCli = TRH_LOG_WARN_CLI;  break;
+	case LOG_ERROR:   lTextSeverityFile = TRH_LOG_ERROR; lTextSeverityCli = TRH_LOG_ERROR_CLI; break;
 	}
 
 	va_start( args, iMessage );
@@ -109,7 +115,7 @@ void trh_log( LogSeverity iSeverity, chars iMessage, ... )
 		printf( "\033[0;33m%06.3f\033[0m ", lTime - gsLog.time );
 	else
 		printf( "%06.3f ", lTime - gsLog.time );
-	printf( "%s", lTextSeverity );
+	printf( "%s", lTextSeverityCli );
 	vprintf( iMessage, args );
 	gsLog.time = lTime;
 	va_end( args );
@@ -123,7 +129,7 @@ void trh_log( LogSeverity iSeverity, chars iMessage, ... )
 
 		va_start( args, iMessage );
 
-		fprintf( gsLog.file, "%s %s", lTimeBuffer, lTextSeverity );
+		fprintf( gsLog.file, "%s %s", lTimeBuffer, lTextSeverityFile );
 		vfprintf( gsLog.file, iMessage, args );
 
 		va_end( args );
