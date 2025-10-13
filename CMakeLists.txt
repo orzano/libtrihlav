@@ -16,6 +16,9 @@ set( CMAKE_CXX_STANDARD 11 )
 set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu11" )
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11" )
 
+# Add an option to control whether to build a static or shared library
+option( TRIHLAV_LINK_STATIC "Build Trihlav as a static library" OFF )
+
 include_directories( include )
 
 file( GLOB SOURCE_FILES src/*.c )
