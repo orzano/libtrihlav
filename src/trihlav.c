@@ -38,6 +38,9 @@ typedef struct TApplication {
 	/// If true, application is terminating.
 	bool terminate;
 
+	/// If true, application should reload its settings and reset its state.
+	bool reload;
+
 	/// Epoll file descriptor.
 	int epoll_fd;
 
@@ -151,7 +154,7 @@ TApplication *trh_init( void *iExt )
 // Set callback that will be executed on signal from user space.
 int trh_set_signal_handler( int iSignal, handle_signal_usr iHandler )
 {
-	if( iSignal != SIGUSR1 && iSignal != SIGUSR2 )
+	if( iSignal != SIGHUP && iSignal != SIGUSR1 && iSignal != SIGUSR2 )
 		return TRH_ARG_INVALID;
 
 	if( iHandler == 0 )
@@ -177,6 +180,7 @@ int trh_update()
 	gsApplication.dt = lTime - gsApplication.time_system;
 	gsApplication.time_system = lTime;
 	gsApplication.time_app += gsApplication.dt;
+	if( gsApplication.reload ) return TRH_RELOAD;
 	trh_app_unlock();
 
 	int lEventCount = epoll_wait( gsApplication.epoll_fd, lEvents, EPOLL_EVENTS, 0 );
@@ -239,6 +243,16 @@ bool trh_is_terminating()
 	return lResult;
 }
 
+// Return 'true' if application should reload its settings and reset its state.
+bool trh_is_reloading()
+{
+	bool lResult = false;
+	trh_app_lock();
+	lResult = gsApplication.reload;
+	trh_app_unlock();
+	return lResult;
+}
+
 void trh_release()
 {
     // Destroy the mutex
@@ -296,11 +310,16 @@ int local_signal_failed( int iSignum )
 	return TRH_SIGNAL_FAILED;
 }
 
+static void local_signal_handle_reload( int iSignum )
+{
+	trh_log( LOG_NOTE, "SIGNAL %d HAS BEEN RECEIVED. RELOADING CONFIGURATION.\n", iSignum );
+	gsApplication.reload = true;
+}
+
 static void local_signal_handle_exit( int iSignum )
 {
 	trh_log_end();
 	trh_log( LOG_NOTE, "SIGNAL %d HAS BEEN RECEIVED. APPLICATION WILL NOW STOP.\n", iSignum );
-
 	trh_terminate();
 }
 
@@ -353,11 +372,11 @@ static int local_signal_register()
 	if( signal( SIGTERM, local_signal_handle_exit ) == SIG_ERR )
 		return local_signal_failed( SIGTERM );
 
-	// Historical signals
-
-	// hang-up - device is shuting down
-	if( signal( SIGHUP, local_signal_handle_exit ) == SIG_ERR )
+	// hang-up - reload configuration 
+	if( signal( SIGHUP, local_signal_handle_reload ) == SIG_ERR )
 		return local_signal_failed( SIGHUP );
+
+	// Historical signals
 
 	if( signal( SIGQUIT, local_signal_handle_exit ) == SIG_ERR )
 		return local_signal_failed( SIGQUIT );

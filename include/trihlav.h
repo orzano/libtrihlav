@@ -46,6 +46,7 @@ extern "C" {
 #define TRH_WAITING					2
 #define TRH_END						3
 #define TRH_SKIP					4
+#define TRH_RELOAD					5
 
 #define TRH_JSON_LOAD_FAILED		16
 #define TRH_JSON_INVALID			17
