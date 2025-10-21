@@ -48,7 +48,7 @@ static TTrhDbus gsBus = {
 // #region Exported functions
 
 // Initialize dbus interface.
-int trh_dbus_init( chars iDestination, chars iPath, chars iInterface, const sd_bus_vtable *iVtable )
+int trh_dbus_init( chars iDestination, chars iPath, chars iInterface, const sd_bus_vtable *iVtable, void *iUserData )
 {
 	int lRetCode = TRH_OK;
 
@@ -66,7 +66,7 @@ int trh_dbus_init( chars iDestination, chars iPath, chars iInterface, const sd_b
 	sd_bus_add_object_manager( gsBus.ptr, 0, iDestination );
 
 	// Install object
-	if( ( lRetCode = sd_bus_add_object_vtable( gsBus.ptr, 0, iPath, iInterface, iVtable, 0 ) ) < 0 ) {
+	if( ( lRetCode = sd_bus_add_object_vtable( gsBus.ptr, 0, iPath, iInterface, iVtable, iUserData ) ) < 0 ) {
 		trh_log( LOG_ERROR, "SDBUS failed to add VTABLE. Error: %s\n", strerror( -lRetCode ) );
 		return TRH_DBUS_INIT_FAILED;
 	}

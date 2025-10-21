@@ -38,10 +38,11 @@ typedef struct TTrhDbusMessage {
  * @param iPath Path of the dbus.
  * @param iInterface Interface of the dbus.
  * @param iVtable Vtable of the dbus (const sd_bus_vtable*).
+ * @param iUserData User data are passed to callback function (DBUS methods, or DBUS signal listeners).
  * @retval TRH_OK
  * @retval TRH_DBUS_INIT_FAILED
  */
-int trh_dbus_init( chars iDestination, chars iPath, chars iInterface, const sd_bus_vtable *iVtable );
+int trh_dbus_init( chars iDestination, chars iPath, chars iInterface, const sd_bus_vtable *iVtable, void *iUserData );
 
 /**
  * @brief Initialize dbus signal subscription.
