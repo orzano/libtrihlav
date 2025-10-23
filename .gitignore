@@ -1,4 +1,11 @@
 # Build files
 build/
+compile_commands.json
 
 # IDEs and editors
+.clangd
+.nvim.lua
+*.kdev4
+.kdev4/
+
+

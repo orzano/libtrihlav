@@ -66,12 +66,13 @@ static chars local_get_path_home()
 		return "";
 	}
 
-	size_t lHomeLen = strlen( lHomeEnv );
+	const size_t lHomeLen = strlen( lHomeEnv );
 	gsPaths[TRH_HOME] = malloc( lHomeLen + 2 );
-	strlcpy( gsPaths[TRH_HOME], lHomeEnv, lHomeLen + 2 );
+	memset( gsPaths[TRH_HOME], 0, lHomeLen + 2 );
+	strncpy( gsPaths[TRH_HOME], lHomeEnv, lHomeLen );
 
 	if( gsPaths[TRH_HOME][lHomeLen - 1 ] != PATH_SEP_C )
-		strlcat( gsPaths[TRH_HOME], PATH_SEP, lHomeLen + 2 );
+		strcat( gsPaths[TRH_HOME], PATH_SEP );
 
 	return gsPaths[TRH_HOME];
 }
@@ -253,11 +254,12 @@ int trh_create_path( chars iPath )
 	char *lPathIdx;
 	int32_t lCode;
 
+	memset( lPathCopy, 0, PATH_MAX );
 	// Create a copy of the path, so we can modify it.
-	strncpy( lPathCopy, iPath, PATH_MAX );
+	strncpy( lPathCopy, iPath, PATH_MAX - 2 );
 	// Last character of the path must be a directory separator.
 	if( lPathCopy[ strlen( lPathCopy ) - 1 ] != PATH_SEP_C )
-		strlcat( lPathCopy, PATH_SEP, PATH_MAX );
+		strcat( lPathCopy, PATH_SEP );
 	// Create index.
 	lPathIdx = strchr( lPathCopy + 1, PATH_SEP_C );
 
