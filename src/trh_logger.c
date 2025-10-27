@@ -168,7 +168,7 @@ void trh_log_end()
 {
 	printf( "\n" );
 
-	if( gsLog.file != 0 ) {
+	if( gsLog.file != 0 && gsLog.severity <= gsLog.current_message_severity ) {
 		fprintf( gsLog.file, "\n" );
 		fflush( gsLog.file );
 	}
