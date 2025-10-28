@@ -39,7 +39,6 @@ target_link_libraries(
 	${APPLICATION_NAME}
 	json-c
 	systemd
-	mnl
 )
 
 if( CMAKE_BUILD_TYPE STREQUAL "Debug" )
