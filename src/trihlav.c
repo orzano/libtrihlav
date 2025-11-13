@@ -194,6 +194,15 @@ int trh_update()
 	return TRH_OK;
 }
 
+double trh_get_sys_time()
+{
+	double lResult = 0;
+	trh_app_lock();
+	lResult = gsApplication.time_system;
+	trh_app_unlock();
+	return lResult;
+}
+
 double trh_get_app_time()
 {
 	double lResult = 0;

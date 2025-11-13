@@ -143,6 +143,11 @@ void trh_set_loop_error_handler( handle_loop_error iHandler );
 int trh_update();
 
 /**
+ * @brief Return system time.
+ */
+double trh_get_sys_time();
+
+/**
  * @brief Get application time.
  */
 double trh_get_app_time();
